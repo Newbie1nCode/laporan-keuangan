@@ -2,7 +2,6 @@
 require_once 'config/database.php';
 include 'includes/header.php';
 
-// Query untuk data chart pemasukan vs pengeluaran per bulan
 $sql = "SELECT 
         DATE_FORMAT(tanggal, '%Y-%m') as bulan,
         COALESCE(SUM(CASE WHEN jenis = 'pemasukan' THEN jumlah ELSE 0 END), 0) as pemasukan,
@@ -14,7 +13,7 @@ $sql = "SELECT
 $stmt = $pdo->query($sql);
 $dataChart = $stmt->fetchAll();
 
-// Query untuk data chart per kategori
+
 $sqlKategori = "SELECT 
                 kategori,
                 COALESCE(SUM(jumlah), 0) as total,
@@ -26,12 +25,12 @@ $sqlKategori = "SELECT
 $stmtKategori = $pdo->query($sqlKategori);
 $dataKategori = $stmtKategori->fetchAll();
 
-// Siapkan data untuk chart
+
 $labels = [];
 $pemasukanData = [];
 $pengeluaranData = [];
 
-// Jika tidak ada data, buat array kosong untuk 6 bulan terakhir
+
 if (empty($dataChart)) {
     for ($i = 5; $i >= 0; $i--) {
         $date = date('Y-m', strtotime("-$i months"));
@@ -47,7 +46,7 @@ if (empty($dataChart)) {
     }
 }
 
-// Siapkan data untuk chart kategori
+
 $kategoriPemasukan = [];
 $jumlahPemasukan = [];
 $kategoriPengeluaran = [];
@@ -91,7 +90,7 @@ foreach ($dataKategori as $item) {
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Fungsi format Rupiah untuk tooltip
+    
     const formatRupiah = (value) => {
         return 'Rp ' + value.toLocaleString('id-ID');
     };
@@ -114,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // Chart Pemasukan vs Pengeluaran
+    
     const ctx1 = document.getElementById('chartPemasukanPengeluaran').getContext('2d');
     const chart1 = new Chart(ctx1, {
         type: 'bar',
@@ -150,7 +149,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Chart Pemasukan per Kategori
+
     <?php if (!empty($kategoriPemasukan)): ?>
     const ctx2 = document.getElementById('chartPemasukanKategori').getContext('2d');
     const chart2 = new Chart(ctx2, {

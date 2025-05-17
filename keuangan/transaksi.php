@@ -2,7 +2,7 @@
 require_once 'config/database.php';
 include 'includes/header.php';
 
-// Proses form jika ada POST request
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $errors = [];
     
@@ -11,8 +11,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $kategori = $_POST['kategori'] ?? '';
     $jumlah = $_POST['jumlah'] ?? 0;
     $keterangan = $_POST['keterangan'] ?? '';
+ 
     
-    // Validasi
     if (empty($tanggal)) $errors[] = "Tanggal harus diisi";
     if (empty($jenis)) $errors[] = "Jenis transaksi harus dipilih";
     if (empty($kategori)) $errors[] = "Kategori harus dipilih";
@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
     
-    // Tampilkan error jika ada
+  
     if (!empty($errors)) {
         echo '<div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">';
         echo '<p class="font-bold">Gagal menyimpan transaksi:</p>';
@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Daftar kategori
+
 $kategori_pemasukan = ['gaji', 'bonus', 'investasi', 'hibah', 'lainnya'];
 $kategori_pengeluaran = ['makanan', 'transportasi', 'hiburan', 'kesehatan', 'pendidikan', 'tagihan', 'lainnya'];
 ?>
@@ -121,7 +121,7 @@ document.getElementById('jenis').addEventListener('change', function() {
         pengeluaran.style.display = 'block';
     }
     
-    // Reset kategori selection
+  
     document.getElementById('kategori').selectedIndex = 0;
 });
 </script>

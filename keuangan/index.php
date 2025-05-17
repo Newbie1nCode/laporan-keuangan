@@ -2,21 +2,21 @@
 require_once 'config/database.php';
 include 'includes/header.php';
 
-// Query untuk summary
-// Query untuk summary
+
 $sql = "SELECT 
         COALESCE(SUM(CASE WHEN jenis = 'pemasukan' THEN jumlah ELSE 0 END), 0) as total_pemasukan,
         COALESCE(SUM(CASE WHEN jenis = 'pengeluaran' THEN jumlah ELSE 0 END), 0) as total_pengeluaran,
-        COALESCE(SUM(CASE WHEN jenis = 'pemasukan' THEN jumlah ELSE 0 END), 0) - COALESCE(SUM(CASE WHEN jenis = 'pengeluaran' THEN jumlah ELSE 0 END), 0) as saldo
+        COALESCE(SUM(CASE WHEN jenis = 'pemasukan' THEN jumlah ELSE 0 END), 0) - 
+        COALESCE(SUM(CASE WHEN jenis = 'pengeluaran' THEN jumlah ELSE 0 END), 0) as saldo
         FROM transaksi";
 $stmt = $pdo->query($sql);
 $summary = $stmt->fetch();
 
-// Query untuk transaksi terakhir
-$sql = "SELECT * FROM transaksi ORDER BY tanggal DESC LIMIT 5";
+$sql = "SELECT * FROM transaksi ORDER BY tanggal DESC";
 $stmt = $pdo->query($sql);
 $transaksi = $stmt->fetchAll();
 ?>
+
 
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
     <div class="bg-green-100 p-6 rounded-lg shadow">
@@ -33,8 +33,9 @@ $transaksi = $stmt->fetchAll();
     </div>
 </div>
 
+
 <h2 class="text-xl font-semibold mb-4">Transaksi Terakhir</h2>
-<div class="bg-white p-6 rounded-lg shadow overflow-x-auto">
+<div class="bg-white p-6 rounded-lg shadow overflow-x-auto max-h-96 overflow-y-auto">
     <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
             <tr>
@@ -43,6 +44,7 @@ $transaksi = $stmt->fetchAll();
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
             </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
@@ -55,11 +57,22 @@ $transaksi = $stmt->fetchAll();
                         <?= ucfirst($t['jenis']) ?>
                     </span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap"><?= $t['kategori'] ?></td>
+                <td class="px-6 py-4 whitespace-nowrap"><?= htmlspecialchars($t['kategori']) ?></td>
                 <td class="px-6 py-4 whitespace-nowrap">Rp <?= number_format($t['jumlah'], 0, ',', '.') ?></td>
-                <td class="px-6 py-4"><?= $t['keterangan'] ?></td>
+                <td class="px-6 py-4"><?= htmlspecialchars($t['keterangan']) ?></td>
+                <td class="px-6 py-4">
+                    <form action="hapus.php" method="POST" onsubmit="return confirm('Yakin ingin menghapus transaksi ini?');">
+                        <input type="hidden" name="id" value="<?= $t['id'] ?>">
+                        <button type="submit" class="text-red-600 hover:text-red-800 font-semibold">Hapus</button>
+                    </form>
+                </td>
             </tr>
             <?php endforeach; ?>
+            <?php if (count($transaksi) === 0): ?>
+            <tr>
+                <td colspan="6" class="text-center px-6 py-4 text-gray-500">Tidak ada data transaksi.</td>
+            </tr>
+            <?php endif; ?>
         </tbody>
     </table>
 </div>
